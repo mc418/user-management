@@ -10,7 +10,7 @@ const DataSchema = new Schema(
     firstName: String,
     lastName: String,
     sex: String,
-    age: String,
+    age: Number,
     password: String
   },
   { timestamps: true },

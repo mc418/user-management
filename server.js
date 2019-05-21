@@ -79,7 +79,7 @@ router.post("/updateData", (req, res) => {
 router.delete("/deleteData", (req, res) => {
   const { id } = req.body;
   console.log(req.body);
-  Data.remove({_id:id}, (err, data) => {
+  Data.deleteMany({_id:id}, (err, data) => {
     if (err) return res.json({ success: false, error: err });
     return res.json({ success: true, data: data });
   })
@@ -100,7 +100,7 @@ router.post("/putData", (req, res) => {
   data.firstName = firstName;
   data.lastName = lastName;
   data.sex = sex;
-  data.age = age;
+  data.age = Number(age);
   data.password = password;
   data.id = id;
   data.save(err => {
@@ -115,12 +115,12 @@ router.get("/sort", (req, res) => {
   var query = require('url').parse(req.url, true).query;
   var field = query.field;
   var option = query.option;
-  console.log(option);
-  // Data.find({}, null, {sort: {firstName: 1}}, function (err, data) {
+  console.log(field);
     Data.find({}, null, {sort: {[field]: option}}, function (err, data) {
       if (err) return res.json({ success: false, error: err });
-    return res.json({ success: true, data: data });
-  });
+      return res.json({ success: true, data: data });
+    });
+  // }
 });
 
 
