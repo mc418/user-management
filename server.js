@@ -36,16 +36,15 @@ app.use(logger("dev"));
 
 // this is our get method
 // this method fetches all available data in our database
-router.get("/getData", (req, res) => {
-  Data.find((err, data) => {
-    if (err) return res.json({ success: false, error: err });
-    return res.json({ success: true, data: data });
-  });
-});
+// router.get("/getData", (req, res) => {
+//   Data.find((err, data) => {
+//     if (err) return res.json({ success: false, error: err });
+//     return res.json({ success: true, data: data });
+//   });
+// });
 
 // this is our get method
 // this method fetches user info by id in our database
-
 router.post("/getUser", (req, res) => {
   const { id } = req.body;
   console.log(id);
@@ -57,7 +56,6 @@ router.post("/getUser", (req, res) => {
 
 // this is our update method
 // this method overwrites existing data in our database
-
 router.post("/updateData", (req, res) => {
   const { id, firstName, lastName, age, sex } = req.body;
   Data.findById(id, function(err, data) {
@@ -81,27 +79,13 @@ router.post("/updateData", (req, res) => {
 router.delete("/deleteData", (req, res) => {
   const { id } = req.body;
   console.log(req.body);
-  // Data.remove({_id: id}, function(err) {
-  //   if (err) {
-  //     return res.send(err);
-  //   } else {
-  //     console.log('deleted!!!!');
-  //     Data.findById(id, err => {
-  //       if (err) {
-  //         return req.send(err);
-  //       } else {
-  //         return res.json({success: true});
-  //       }
-  //     })
-  //   }
-  // })
   Data.remove({_id:id}, (err, data) => {
     if (err) return res.json({ success: false, error: err });
     return res.json({ success: true, data: data });
   })
 });
 
-// this is our create methid
+// this is our create method
 // this method adds new data in our database
 router.post("/putData", (req, res) => {
   let data = new Data();
@@ -125,6 +109,47 @@ router.post("/putData", (req, res) => {
   });
 });
 
+// this is our get method
+// this method fetches all available data in our database
+router.get("/sort", (req, res) => {
+  var query = require('url').parse(req.url, true).query;
+  var field = query.field;
+  var option = query.option;
+  console.log(option);
+  // Data.find({}, null, {sort: {firstName: 1}}, function (err, data) {
+    Data.find({}, null, {sort: {[field]: option}}, function (err, data) {
+      if (err) return res.json({ success: false, error: err });
+    return res.json({ success: true, data: data });
+  });
+});
+
+
+// search method
+function escapeRegex(text) {
+  return text.replace(/[-[\]{}()*+?.,\\^$|#\s]/g, "\\$&");
+};
+
+router.get("/getData", function(req, res) {
+  if (req.query.search) {
+     const regex = new RegExp(escapeRegex(req.query.search), 'gi');
+     Data.find({$or:[{ "firstName" : regex },
+                      {"lastName" : regex},
+                      {"sex": regex}, 
+                      {"age" : regex}
+                    ]}, function(err, data) {
+         if(err) {
+             console.log(err);
+         } else {
+          return res.json({ success: true, data: data });
+         }
+     }); 
+  } else {
+    Data.find((err, data) => {
+      if (err) return res.json({ success: false, error: err });
+      return res.json({ success: true, data: data });
+    });
+  }
+});
 
 // append /api for our http requests
 app.use("/api", router);
