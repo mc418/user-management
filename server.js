@@ -89,9 +89,9 @@ router.delete("/deleteData", (req, res) => {
 // this method adds new data in our database
 router.post("/putData", (req, res) => {
   let data = new Data();
-  const { id, firstName, lastName, sex, age, password } = req.body;
+  const { firstName, lastName, sex, age, password } = req.body;
   console.log(req.body);
-  if (!id) {
+  if (!firstName) {
     return res.json({
       success: false,
       error: "INVALID INPUTS"
@@ -102,7 +102,6 @@ router.post("/putData", (req, res) => {
   data.sex = sex;
   data.age = Number(age);
   data.password = password;
-  data.id = id;
   data.save(err => {
     if (err) return res.json({ success: false, error: err });
     return res.json({ success: true });
@@ -135,7 +134,7 @@ router.get("/getData", function(req, res) {
      Data.find({$or:[{ "firstName" : regex },
                       {"lastName" : regex},
                       {"sex": regex}, 
-                      {"age" : regex}
+                      // {"age" : regex}
                     ]}, function(err, data) {
          if(err) {
              console.log(err);
